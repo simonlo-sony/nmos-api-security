@@ -1,14 +1,47 @@
-# AMWA NMOS API Security Recommendations
+# AMWA BCP-003 NMOS API Security Recommendations
 
-This repository is used to document best practice and recommendations,
-as produced by AMWA's API Security group.  
-We are looking at confidentiality, identification, integrity, authentication
-and authorization for [AMWA NMOS APIs](https://amwa-tv.github.io/nmos).
+## GitHub Pages documentation
 
-Our approach is based on TLS 1.2/1.3, X.509 PKI, OAuth 2.0 and JSON Web Tokens.
+If you are reading this you are on the gh-pages branch, which is used to generate the documentation from the master and other branches, and from releases.  These are served at <https://amwa-tv.github.io/nmos-api-security>.
 
-## Documentation
+_Generating and pushing now happen automatically on changes/daily, but if you need to do this manually, please read on._
 
-- [AMWA BCP-003-01: Securing communications in NMOS APIs](best-practice-secure-comms.md)
-- [future BCP-003-02: Authorization for NMOS APIs](best-practice-authorization.md)
-- [Initial Security Proposal (for info only)](security-proposal.md)
+## Generating the documentation
+
+Clone this repo (if you haven't already), checkout the gh-pages branch and make:
+
+``git checkout gh-pages``
+
+``make``
+
+This runs scripts to:
+
+- clone the repo from AMWA's GitHub
+- for each branch and release (with some exceptions) extract documentation, APIs and schemas
+  - making HTML renders of the RAML APIs
+- for each branch and release create indexes for the documentation, APIs and schemas
+- make links to what will later be the HTML renders of the Markdown documentation
+
+## Updating AMWA's GitHub
+
+Push the updated documentation to AMWA's GitHub with.
+
+``make push``
+
+This then triggers a build of the GitHub Pages. This happens on GitHub's servers, using Jekyll to render the HTML.  This includes rendering the Markdown content, but we have to do the RAML ourselves.  
+
+## Serving pages locally
+
+See also <https://help.github.com/articles/setting-up-your-github-pages-site-locally-with-jekyll>
+
+Install Bundler and Jekyll - af you have Ruby installed then:
+
+``gem install bundler``
+
+``bundle install``
+
+Run server with:
+
+``make server``
+
+and browse to the indicated page.

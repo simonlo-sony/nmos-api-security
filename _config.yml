@@ -3,3 +3,14 @@ theme: jekyll-theme-primer
 
 # GitHub project
 baseurl: /nmos-api-security
+
+# Which release or branch appears in header links and on the home page
+default_tree: branches/v1.0-dev # or e.g. tags/v1.1
+
+# So we can redirect from e.g. /is-04
+plugins:
+  - jekyll-redirect-from
+
+# Regex patterns of tags (releases) and branches to show
+show_tags: v[0-9]*\.[0-9]*
+show_branches: v[0-9]*\.[0-9]
