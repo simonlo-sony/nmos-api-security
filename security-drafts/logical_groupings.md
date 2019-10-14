@@ -3,11 +3,11 @@
 ## Introduction
 
 There may be a need for a mechanism by which NMOS Resources, typically Nodes and Devices, acquire
-information regarding the logical "group" or "area" that they belongs to. This information should be
-acquired in an automatic way, such that the resource limits the requirement of being manually
-configured.
+information regarding the logical "group" or "area" that they belong to. This information should be
+acquired in an automatic way, __such that the resource limits the requirement of being manually
+configured__.
 
-The addition for such a mechanism would allow resources to be placed within logical groups to limit
+The addition of such a mechanism would allow resources to be placed within logical groups to limit
 the use of Access Tokens against a given Node or Device within a broadcast environment. Specifically,
 it would enable a Resource Server (such as a Device or Node) to validate the `aud` claim within a
 JSON Web Token, when a Client, such as a Broadcast Controller (BC), performs an API request against
@@ -23,19 +23,21 @@ must identify itself with a value in the audience claim. If the principal
 processing the claim does not identify itself with a value in the `aud` claim when this claim is
 present, then the JWT must be rejected."
 
+This may be defined as a single string or an array of strings. Typically these involve FQDNs, but this is not mandated.
+
 In order for a resource server to identify itself with the claim, it must first be aware of its own
 identity. This could take various forms such as:
-- The UUID of the resource - this is the unique identifier for that given resource (Node, Device,  
-  Sender, etc.). This is the most granular definition.
+- The UUID of the resource - this is the unique identifier for that given resource (Node, Device,
+  Sender, etc.). This allows granular claims, but depends upon the resource in question using a UUID, and could result
+  in very large tokens.
 - The FQDN of the device - this is the hostname and domain in which the hardware device can be found.
-- A wild-carded FQDN or UUID - this is the same as above, but makes use of wild-carding (e.g.
-  `*.broadcastcentre.com` or `52358e38-cba1-11e8-*`) in order to target all devices within a
-  sub-domain or a specific subset of UUID's.
 - IP addresses / subnets - whilst this negates the need for DNS, due to the reliance of TLS on
   hostnames and the requirement of OAuth over HTTPS/TLS, this option will not be discussed in this
-  document due to the dynamic assignment of addresses recommended via the use of DHCP.
+  document.
 - The name of a group - this is a string that corresponds with a group that the resource is a part
-  of. The assignment of such groups is detailed below.
+  of. Potential mechanisms to assign such groups are detailed below.
+- A wildcard - this could be applied to any of the above, but makes use of wild-carding (e.g.
+  `*.broadcastcentre.com` or `172.29.*`) in order to target all devices within an area.
 
 ## Grouping Concepts
 
@@ -51,7 +53,10 @@ The key methods of gaining information to signify the groups/areas that a resour
 - The use of DNS Naming Conventions and wildcards.
 - The use of Reverse DNS lookups and PTR records.
 - Access to a common Grouping API.
-- Use of the IS-04 native fields, specifically the `tags` and possibly `label` fields.
+- Use of the IS-04 native fields, specifically `tags`.
+
+Each of these methods has associated pros and cons, including the granularity of permission which they may permit, and
+whether this can be intra-Node as well as inter-Node.
 
 ### DNS
 
@@ -65,148 +70,58 @@ DNS-over-HTTPS in order to validate DNS requests to protect against spoofing the
 
 A solution may include the use of reverse-DNS lookups using PTR records. If several PTR records are produced in the
 DNS server for a given hardware device, a reverse-DNS lookup on the device could render a list of possible URIs
-corresponding to that device, each of which defining the various areas corresponding to that device.
+corresponding to that device, each of which defining the various areas corresponding to that device. This does however
+require that the access management system (potentially a broadcast controller) and the DNS server share a strong
+relationship, and adds a processing time to any token based request to allow for any DNS queries to be performed.
 
-Another solution may be to combine the use of DNS entries with the use of native fields within the IS-04 API.
+DNS based grouping only provides the ability to associate tokens at the Node level. Whilst a Node could appear in
+several groups enabling its access from multiple production areas, it could not be restricted in a more granular
+fashion such as restricting access to specific Senders or Receivers.
 
 ### Grouping API
 
-TBC
+A generic grouping API would provide the means to manage a Node and its sub-resources in a very flexible way. This is
+similar to the DNS mechanism above, but has the potential to allow for intra-Node access management and avoids the
+potential need for DNSSec or DNS over HTTPS. The disadvantages of this approach include the need to define a new API,
+and the round trip time for resource servers to identify what a token is permitted to do. We have already noted out
+intention to avoid the latter issue in the use of JWTs including claims rather than opaque tokens.
 
 ### Using Native NMOS fields
 
-#### The `Tags` field
 The `tags` field within IS-04 allows "NMOS resources to expose supplemental information without changing current
 IS-04 specification while maintaining backward compatibility."
 Due to the presence of the `tags` field in all NMOS resources, this allows for granularity down to the sender and
 receiver level, even if resources share a common network address.
 
-The tags field is a JSON object, and could therefore be an array consisting of a list of the logical areas to which
-that resource belongs. These areas could be assigned to the resource upon creation by the user, via the use of a
-UI, or assigned dynamically by a control system, however such a mechanism for updating the Node API is currently
-not defined. The list of potential areas could be inferred by DNS / reverse-DNS means as described above.
+By defining a known tag name such as 'urn:x-nmos:tag:auth', the corresponding array could then consist of a list of the
+logical areas to which that resource belongs. These areas could be assigned to the resource upon creation by the user,
+via the use of a UI, or assigned dynamically by a control system, however such a mechanism for updating the Node API is
+currently not defined and would need to be managed in a vendor-specific way. A work around for this may be to identify
+the list of potential areas via DNS / reverse-DNS means as described above, with the associated security requirements.
 
-One disadvantage of using API fields is that resources could be removed from one logical area and placed into
-another without the `tags` field being edited in some way, thus rendering them inoperable until modified or
-re-provisioned.
+One disadvantage of using API fields is that particularly mobile Nodes may be harder to manage, thus rendering them
+inoperable until modified or re-provisioned with appropriate tags when moved from one area to another. A further
+potential issue in this distributed mechanism of managing security is that tags could be accidentally left set to
+permissive values, leaving them open to use by larger user groups than intended.
 
-#### A `user` field
-One concept that occurs within the domain of OAuth 2.0 that does not exist within NMOS is the concept of a `user`.
-Such a field could be added to the APIs of resources upon instantiation, and may be linked to the OS's user profile
-that is currently logged in to the device. This however would not help with the assignment of logical groups beyond
-grouping resources by their given user.
+It should also be noted that `tags` are strongly tied to IS-04, and whilst they could easily be mapped onto APIs like
+IS-05 given their common resource types, it may be harder to use them with APIs like IS-08 where resources like
+'inputs' and 'outputs' have no similar concept.
 
 ## Grouping Pitfalls
 
-A concern is when a given Node or device contains several resources (a Multi-Viewer, for instance, with several
-receivers) that belong to different logical groups.
-Due to the device having a single IP address and FQDN, more granularity is required to separate the resources. All
-resources within a given Node would also correspond to a given Node UUID, and share all node-level information.
+As noted above, there are a number of potential pitfalls associated with each of these mechanisms for determining a
+relevant audience (`aud`) claim:
 
-A second concern is the moving of a Node from one logical area to a different one. There is a balance between
-security and interoperability that needs to be considered.
-Applying a range of operating areas to a Node's tags (detailed below), or providing very widely scoped
-wild-carding, allows for interoperability and the moving of Nodes between operating areas, at the risk of having
-Nodes susceptible to control by an unauthorised party.
+1) When a given Node or device contains several independent resources that belong to different logical groups, more
+granularity may be required to separate the resources beyond an FQDN or Node ID. There is a question over whether
+this should be resolved at this layer, or whether it should be left up to higher level control systems.
 
-Finally, the basis of using access tokens alongside refresh tokens is that access tokens are short-lived, whilst
-refresh tokens are used to gain further access tokens upon their expiration. If a specific set of UUIDs / hostnames
-are used to populate the `aud` claim, it is likely that any changes would not be detected until a new access token
-was requested. This would likely result in a fresh access token needing to be requested upon every change for a
-given user. Equally, if an access token is requested at the beginning of every API request, this would allow very
-granular `aud` claims, but would add significant network overhead, and require several tokens to be cached within
-the Broadcast Controller.
+2) When moving of a Node from one logical area to a different one. There is a balance between
+security and flexibility that needs to be considered.
 
-## Use Cases
-
-### Single Broadcast Controller (BC) and Authorization Server (AS) in single logical area
-
-#### Situation
-In this use case, a single Authorization Server and Broadcast Controller operate over a single logical group or
-area. In such a case, all devices will exist on a shared sub-domain and thus limiting a token based on DNS domain
-wouldn't provide any further restrictions, except hijacking a token for use in a different domain.
-
-#### Populating the `aud` Claim
-The use of DNS wild-carding within a single domain could then only limit the access to devices with common
-hostnames. For instance, `camera-*.broadcastcentre.tv`. If there is any logic regarding allocation of UUID's to
-Nodes, wild-carding of UUID's may also be of benefit.
-
-In this use-case, the population of the `aud` claim could be dependant on the user requesting the token. The
-Authorization Server may contain, or have access to, via some form of LDAP system, a list of domains, productions,
-etc, that the user is authorized to access, and the claim populated with relevant domains or UUIDs, or the names of
-logical groups.
-
-#### Validating the claim
-In the case of a wild-carded host-names, Nodes are capable of validating the contents of the claim against their
-own host-name. Equally, in the case of a UUID, Nodes are capable of checking this against the UUID stored on the
-device.
-
-For a list of productions, this would likely be checked against the `tags` field of the relevant resources API.
-
-### Single BC and AS with multiple logical areas
-
-#### Situation
-In this use case, a single Authorization Server and Broadcast Controller operate over multiple logical groups or
-areas. In such a case, it is assumed each of the areas operate within their own sub-domain and on their own subnet.
-
-#### Populating the `aud` Claim
-With a single BC and AS, there is a lack of information available to the Auth Server from the controller to
-populate the `aud` claim with anything other than an all-encompassing wildcard claim for all available domains
-(e.g. `*.broadcastcentre.com`). The access control is then reliant on the user operating the BC, the information of
-which would likely populate the `x-nmos` claim.
-
-For further granularity, the BC would need to request tokens with added data regarding the type of interaction it
-is expecting to make e.g. reading API in Area 1. This shift of authorization towards the BC and away from the AS
-undermines having a distinct, separate authorization service.
-
-The BC could alternatively request a token from the Auth Server before each API call, with the access token limited
-to the audience of the given Node. This however would incur significant overhead with calls constantly made to the
-Auth Server, would remove the advantage of using Refresh Tokens and would likely worsen the user experience with
-repeated user-validation requests required.
-
-#### Validating the Claim
-The claim would likely be validated against the Node or Devices UUID if the token was populated with each request.
-
-### Single BC and AS with Nodes spread between multiple operating areas
-
-#### Situation
-In this use case, a single Authorization Server and Broadcast Controller operate over multiple logical groups or
-areas. In such a case, a Node contains several resources (senders / receivers) that reside in different logical
-areas (e.g. Area 1 and Area 2.) It is assumed in this instance that the individual resources are managed over a
-single network interface and therefore the hardware device has a single IP address and domain name.
-
-#### Populating the `aud` Claim
-In this instance, populating the `aud` claim with a sub-domain would result in a user being able to control all the
-resources on the device. In order to apply finer granularity, population of the `tags` field for each sender and
-receiver would allow the individual resource to validate the token against its own API.
-
-#### Validating the Claim
-The contents of the claim would be validated against the `tags` field within the resource's API. This in turn could
-be populated via a DNS reverse lookup. A DNS server could contain multiple PTR records for a given device used
-across multiple areas. A reverse DNS lookup against that device could then result in multiple records being
-returned that detailed the groups to which that device belongs. However, whilst that would detail the groups to
-which that device belonged, there would still be no way of linking individual resources to any given group.
-
-## Conclusion
-
-Implementing a grouping mechanism by means of adding labels or tags to NMOS APIs moves significant effort into the
-hands of users, in the form of adding groups uniformly into GUIs when creating resources, or into the hands of
-network engineers, by adding PTR records and updating NMOS API's by some mechanism not yet defined.
-
-With the example of a device containing resources belonging to different operating areas, this is likely going to
-be a case in which a device hosts shared resources, such as transcoders, converters, etc, or special hardware. In
-this case, the implementation must balance interoperability and security.
-An interoperable means of grouping a subset of NMOS resources might be to implement a means of bulk editing of
-resources - an operation that in itself would require a means of authorization and an operation not yet supported by
-NMOS APIs. In this instance it is likely that all resources on the device will be controllable from the given
-domain's Auth Server. As such, an emphasis should be placed on a Broadcast Controller's ability to
-communicate with various Auth Server's from different logical areas, rather than how to group individual resources.
-As virtualisation and private cloud solutions are adopted more in the future, this case is likely to exist less and
-less, with the concept of creating functionality on the fly, to meet changing demand, increasing.
-
-The mechanism of using DNS records with wildcarding provides a simple mechanism by which to group several devices
-inside a common sub-domain. It would be easy to implement and makes use of network, and not NMOS-specific,
-technologies. Whilst this puts a heavy reliance on DNS systems, and would probably require the
-implementation of DNS Security (DNSSec), the spoofing of a device inside the DNS system should only render a
-specific device uncontrollable, due to the protection provided by HTTPS/TLS, as opposed to having a malicious actor
-be able to control a spoofed device. Due to the requirement of DNS systems within a fully-IP, "zero-configuration" broadcast centre, and its definiton within the JT-NM TR1001 document, the use of DNS naming conventions would likely lend itself well to the top-level grouping of devices without adding extra layers of complexity that may inhibit uptake by the industry.
+3) Finally, the basis of using access tokens alongside refresh tokens is that access tokens are short-lived, whilst
+refresh tokens are used to gain continued access tokens upon their expiration. If very fine grained permissions are set
+in the `aud` claim, they are more likely to need to change frequently. When these claims need to change, a refresh
+token may be insufficient and the user could be asked to re-authenticate in order to gain an access token with modified
+claims. This could become frustrating, or worse could happen at a critical moment during a production.
