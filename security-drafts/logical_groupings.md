@@ -4,8 +4,7 @@
 
 There may be a need for a mechanism by which NMOS Resources, typically Nodes and Devices, acquire
 information regarding the logical "group" or "area" that they belong to. This information should be
-acquired in an automatic way, __such that the resource limits the requirement of being manually
-configured__.
+acquired in an automatic way.
 
 The addition of such a mechanism would allow resources to be placed within logical groups to limit
 the use of Access Tokens against a given Node or Device within a broadcast environment. Specifically,
