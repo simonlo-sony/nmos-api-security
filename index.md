@@ -2,14 +2,34 @@
 
 # {{ site.github.project_tagline }}
 
-BCP-003 is a series of AMWA NMOS Best Current Practice Specifications for securing NMOS APIs:
+[![Build Status](https://travis-ci.com/AMWA-TV/nmos-api-security.svg)](https://travis-ci.com/AMWA-TV/nmos-api-security)
 
-- [BCP-003-01: Securing communications in NMOS APIs](best-practice-secure-comms.md)
-- [BCP-003-02: Authorization for NMOS APIs (Work In Progress)](best-practice-authorization.md)
 
-These have been developed by the [Advanced Media Workflow Association](https://www.amwa.tv) as part of the [Networked Media Open Specifications](https://www.nmos.tv) initative.
 
-See [here](https://github.com/AMWA-TV/nmos-grouping) for the GitHub repository holding the "source".
+---
 
-See [here](https://amwa-tv.github.io/nmos) for an overview of NMOS specifcations.
+## About BCP-003
 
+
+### What does it do?
+
+- Documents best practice and recommendations for securing AMWA NMOS APIs.
+
+### Why does it matter?
+
+- A secure control plane is essential.
+- These recommendations allow interoperability using widely adopted open technologies.
+
+### How does it work?
+
+- [BCP-003-01](best-practice-secure-comms.md) recommends securing API communication using TLS 1.2 or better.
+- [BCP-003-02](best-practice-authorization.md) recommends using OAuth 2.0 authorisation using JWT, as per [IS-10](https://amwa-tv.github.io/nmos-authorization)
+
+
+---
+
+
+## Recommendation(s)
+- [best-practice-authorization](branches/v1.0-dev/best-practice-authorization.md)
+- [best-practice-secure-comms](branches/v1.0-dev/best-practice-secure-comms.md)
+- [security-proposal](branches/v1.0-dev/security-proposal.md)

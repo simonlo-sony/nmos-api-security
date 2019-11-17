@@ -26,7 +26,7 @@ and are referenced as hyperlinks within the main body.
 
 ## Definitions
 
-_See also the [NMOS Glossary](https://github.com/AMWA-TV/nmos/wiki/Glossary), and definitions within RFCs._
+_See also the [NMOS Glossary](https://amwa-tv.github.io/nmos/wiki/Glossary), and definitions within RFCs._
 
 ### API
 
@@ -95,7 +95,7 @@ The Bearer Token issued by the Authorization Server are much shorter-lived than 
 
 ### Authorization Server API
 
-The Authorization Server SHALL present an instance of the NMOS [Authorization API](APIs/AuthorizationAPI.raml).
+The Authorization Server SHALL present an instance of the NMOS [Authorization API](APIs/AuthorizationAPI.html).
 
 The Authorization Server MAY present multiple versions of the API on the same port, but MUST name-space them accordingly as per the API specification.
 

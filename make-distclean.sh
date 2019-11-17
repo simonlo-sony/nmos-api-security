@@ -1,5 +1,6 @@
 #!/bin/bash
 
-./make-clean.sh
+set -o errexit
 
-# No build tools
+rm -rf source-repo branches tags index.md index-contents.md
+rm -rf node_modules/ yarn.lock package-lock.json .scripts/ .layouts/ _layouts/ assets/ raml2html-nmos-theme/
