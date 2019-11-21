@@ -2,6 +2,7 @@
 
 # {{ site.github.project_tagline }}
 
-- [best-practice-authorization](best-practice-authorization.md)
-- [best-practice-secure-comms](best-practice-secure-comms.md)
-- [security-proposal](security-proposal.md)
+  - [best-practice-authorization](best-practice-authorization.md)
+  - [best-practice-secure-comms](best-practice-secure-comms.md)
+  - [README](README.md)
+  - [security-proposal](security-proposal.md)

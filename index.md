@@ -29,7 +29,8 @@
 ---
 
 
-## Recommendation(s)
-- [best-practice-authorization](branches/v1.0-dev/best-practice-authorization.md)
-- [best-practice-secure-comms](branches/v1.0-dev/best-practice-secure-comms.md)
-- [security-proposal](branches/v1.0-dev/security-proposal.md)
+## Recommendations and related documentation
+  - [best-practice-authorization](branches/v1.0-dev/best-practice-authorization.md)
+  - [best-practice-secure-comms](branches/v1.0-dev/best-practice-secure-comms.md)
+  - [README](branches/v1.0-dev/README.md)
+  - [security-proposal](branches/v1.0-dev/security-proposal.md)
