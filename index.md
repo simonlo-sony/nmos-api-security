@@ -2,7 +2,7 @@
 
 # {{ site.github.project_tagline }}
 
-[![Build Status](https://travis-ci.com/AMWA-TV/nmos-api-security.svg)](https://travis-ci.com/AMWA-TV/nmos-api-security)
+[![Build Status](https://travis-ci.com/AMWA-TV/nmos-api-security.git.svg)](https://travis-ci.com/AMWA-TV/nmos-api-security.git)
 
 
 
