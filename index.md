@@ -2,7 +2,7 @@
 
 # {{ site.github.project_tagline }}
 
-[![Build Status](https://travis-ci.com/AMWA-TV/nmos-api-security.git.svg)](https://travis-ci.com/AMWA-TV/nmos-api-security.git)
+[![Build Status](https://travis-ci.com/AMWA-TV/nmos-api-security.svg)](https://travis-ci.com/AMWA-TV/nmos-api-security)
 
 
 
@@ -30,7 +30,6 @@
 
 
 ## Recommendations and related documentation
-  - [best-practice-authorization](branches/v1.0-dev/best-practice-authorization.md)
-  - [best-practice-secure-comms](branches/v1.0-dev/best-practice-secure-comms.md)
-  - [README](branches/v1.0-dev/README.md)
-  - [security-proposal](branches/v1.0-dev/security-proposal.md)
+- [best-practice-authorization](branches/v1.0-dev/best-practice-authorization.md)
+- [best-practice-secure-comms](branches/v1.0-dev/best-practice-secure-comms.md)
+- [security-proposal](branches/v1.0-dev/security-proposal.md)
