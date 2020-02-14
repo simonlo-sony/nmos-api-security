@@ -3,5 +3,6 @@
 # {{ site.github.project_tagline }}
 
 - [best-practice-authorization](best-practice-authorization.md)
+- [best-practice-certificate-provisioning](best-practice-certificate-provisioning.md)
 - [best-practice-secure-comms](best-practice-secure-comms.md)
 - [security-proposal](security-proposal.md)
