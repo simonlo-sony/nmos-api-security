@@ -34,4 +34,3 @@
 - [best-practice-authorization](branches/v1.0-dev/best-practice-authorization.md)
 - [best-practice-certificate-provisioning](branches/v1.0-dev/best-practice-certificate-provisioning.md)
 - [best-practice-secure-comms](branches/v1.0-dev/best-practice-secure-comms.md)
-- [security-proposal](branches/v1.0-dev/security-proposal.md)
